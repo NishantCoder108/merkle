@@ -9,13 +9,13 @@ This directory contains a minimal TypeScript client to execute the Deposit instr
 - **Classic SPL Token program**: Uses `TOKEN_PROGRAM_ID` (not Token-2022), matching the on-chain `Transfer` in the provided contract snippet.
 
 ### Reference program
-- Gist (on-chain logic and instruction layout): `https://gist.github.com/Alwin24/d7be9fa2d58ddfcf172cf38b92abdd49`
+- Gist (on-chain logic and instruction layout): [Escrow Program Gist](https://gist.github.com/Alwin24/d7be9fa2d58ddfcf172cf38b92abdd49)
 - Program ID (from `declare_id!`): `Q5v9W72xJaP3J39EnwhPm6LBgmUPTEkSQwtqgLFQaLw`
 
 ### Successful example transaction
-- Devnet Explorer: `https://explorer.solana.com/tx/tSowK93wpGjhhenR1VKEtxRkoh5rBipzWiuXDbCqWYbWMH6tAGdeaLTPTKue3SGGLF2oFCc4FvTPhmek54qHjB1?cluster=devnet`
+- Devnet Explorer: [Solana Explorer](https://explorer.solana.com/tx/tSowK93wpGjhhenR1VKEtxRkoh5rBipzWiuXDbCqWYbWMH6tAGdeaLTPTKue3SGGLF2oFCc4FvTPhmek54qHjB1?cluster=devnet)
 
-- Sol-Scan Explorer: `https://solscan.io/tx/tSowK93wpGjhhenR1VKEtxRkoh5rBipzWiuXDbCqWYbWMH6tAGdeaLTPTKue3SGGLF2oFCc4FvTPhmek54qHjB1?cluster=devnet#tokenBalanceChange`
+- Sol-Scan Explorer: [Solscan](https://solscan.io/tx/tSowK93wpGjhhenR1VKEtxRkoh5rBipzWiuXDbCqWYbWMH6tAGdeaLTPTKue3SGGLF2oFCc4FvTPhmek54qHjB1?cluster=devnet#tokenBalanceChange)
 
 
 
@@ -72,7 +72,6 @@ npx tsx deposit.ts
 ### Troubleshooting
 - "TokenAccountNotFoundError": Ensure your wallet has devnet SOL to create ATAs and that `MINT_ADDRESS` is a valid devnet SPL mint.
 - "invalid account data for instruction": Make sure you are using `TOKEN_PROGRAM_ID` (legacy SPL Token) consistently, and that your ATAs were created for the same token program as the mint.
-- No transaction sent: Ensure the call to `sendAndConfirmTransaction` is not commented out.
 
 ### Licensing
 MIT
