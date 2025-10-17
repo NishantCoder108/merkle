@@ -1,91 +1,84 @@
 "use client";
-
 import { useState } from "react";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { stakeTokens } from "@/lib/services/stakeService";
+import { BN } from "bn.js";
 
-type Duration = "durationOne" | "durationTwo" | "durationThree";
-
-type Props = {
-  onConfirm?: (data: { amount: number; duration: Duration }) => void;
-  loading?: boolean;
-};
-
-const durations: { value: Duration; label: string }[] = [
-  { value: "durationOne", label: "Duration One" },
-  { value: "durationTwo", label: "Duration Two" },
-  { value: "durationThree", label: "Duration Three" },
+const DURATION_MAP = [
+  { value: 0, label: "Duration One" },
+  { value: 1, label: "Duration Two" },
+  { value: 2, label: "Duration Three" },
 ];
 
-export default function StakeForm({ onConfirm, loading = false }: Props) {
-  const [amount, setAmount] = useState<string>("");
-  const [duration, setDuration] = useState<Duration>("durationOne");
-  const [error, setError] = useState<string | null>(null);
+export default function StakeForm({ onStaked }: { onStaked?: () => void }) {
+  const { connection } = useConnection();
+  const wallet = useWallet();
+  const [amount, setAmount] = useState("");
+  const [durationIndex, setDurationIndex] = useState(0);
+  const [loading, setLoading] = useState(false);
 
-  const submit = () => {
-    const num = Number(amount);
-    if (!Number.isFinite(num) || num <= 0) {
-      setError("Enter a valid amount > 0");
-      return;
+  async function handleConfirm() {
+    if (!wallet.publicKey) return alert("Connect wallet");
+    const parsed = Number(amount);
+    if (!isFinite(parsed) || parsed <= 0) return alert("Enter valid amount");
+
+    setLoading(true);
+    try {
+      // Create a random positive 64-bit (i64) value as 8-byte LE buffer to avoid number precision issues
+      const bytes = new Uint8Array(8);
+      window.crypto.getRandomValues(bytes);
+      // Ensure non-negative signed i64 by clearing the highest bit
+      bytes[7] &= 0x7f;
+      const stakeId = new BN(Buffer.from(bytes), "le");
+      console.log("____", "amount :", amount, "Stake Id",  stakeId, "Parsed Amount", parsed)
+      const tx = await stakeTokens({
+        connection,
+        wallet,
+        amountFloat: parsed,
+        stakeId,
+        durationIndex,
+      });
+      console.log("Stake tx : ", tx);
+      alert("Staked! tx: " + tx);
+      onStaked?.();
+    } catch (err: any) {
+      console.error(err);
+      alert("Error: " + (err?.message || String(err)));
+    } finally {
+      setLoading(false);
     }
-    setError(null);
-    onConfirm?.({ amount: num, duration });
-  };
-
-  const commonInputClass =
-    "w-full rounded-2xl bg-white/5 border border-white/10 px-6 py-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-200";
+  }
 
   return (
-    <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-8 shadow-2xl">
-      <div className="space-y-6">
-      
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
-            Amount to Stake
-          </label>
-          <input
-            type="number"
-            min="0"
-            step="0.000001"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            placeholder="Enter token amount"
-            className={commonInputClass}
-          />
-        </div>
+    <div className="bg-white/5 p-6 rounded-2xl border border-white/10 space-y-4">
+      <label className="block text-sm text-gray-300">Amount</label>
+      <input
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
+        placeholder="0.0"
+        className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white"
+      />
 
-     
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
-            Lock Duration
-          </label>
-          <select
-            value={duration}
-            onChange={(e) => setDuration(e.target.value as Duration)}
-            className={commonInputClass}
-          >
-            {durations.map((d) => (
-              <option key={d.value} value={d.value} className="bg-gray-900">
-                {d.label}
-              </option>
-            ))}
-          </select>
-        </div>
+      <label className="block text-sm text-gray-300">Lock Duration</label>
+      <select
+        value={durationIndex}
+        onChange={(e) => setDurationIndex(Number(e.target.value))}
+        className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white"
+      >
+        {DURATION_MAP.map((d) => (
+          <option key={d.value} value={d.value}>
+            {d.label}
+          </option>
+        ))}
+      </select>
 
-     
-        {error && (
-          <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-300 text-sm">
-            {error}
-          </div>
-        )}
-
-      
-        <button
-          onClick={submit}
-          disabled={loading}
-          className="w-full bg-[#522AA5] disabled:from-gray-500 disabled:to-gray-600 text-white font-semibold py-4 px-8 rounded-2xl transition-all duration-200 transform hover:scale-[1.02] disabled:scale-100 disabled:cursor-not-allowed shadow-lg cursor-pointer"
-        >
-          {loading ? "Staking..." : "Stake Tokens"}
-        </button>
-      </div>
+      <button
+        onClick={handleConfirm}
+        disabled={loading}
+        className="w-full bg-[#522AA5] text-white py-3 rounded-xl font-semibold disabled:opacity-50 cursor-pointer"
+      >
+        {loading ? "Staking..." : "Confirm"}
+      </button>
     </div>
   );
 }
