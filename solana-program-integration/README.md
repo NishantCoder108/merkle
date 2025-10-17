@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+### Solana Staking dApp (Next.js + Anchor)
 
-## Getting Started
+A minimal, production-ready staking frontend for a Solana Anchor program.
 
-First, run the development server:
+### What this delivers
 
+- Wallet connect (Wallet Adapter) and network-aware RPCs
+- Stake flow: generate 64-bit stake id, derive PDAs, simulate, send
+- Account management: list user stake accounts via Anchor account query
+- Robust UX: client-side validation, clear on-chain error logs surfaced to UI
+
+### Tech
+
+- Next.js 15, TypeScript, Tailwind CSS
+- Anchor (typed IDL), @solana/web3.js, @solana/spl-token
+- Wallet Adapter (Phantom and Standard wallets)
+
+### Run locally
+
+1) Install
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2) Configure env (`.env.local`)
+```env
+NEXT_PUBLIC_SOLANA_NETWORK=https://api.devnet.solana.com
+NEXT_PUBLIC_PROGRAM_ID=Hv6Q2KdFtbdobWYEeMWJ2yPfmg6efMZPd3A6mfKN3L7W
+NEXT_PUBLIC_TOKEN_MINT=Cx97mtHU9hKb3XWeKcDPHgLyEB8vguoNxEsnyGUmm4G9
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3) Start
+```bash
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Key implementation notes
 
-## Learn More
+- PDAs: `stake` and `global` PDAs are derived with the program id; ATAs use the canonical `ASSOCIATED_TOKEN_PROGRAM_ID`.
 
-To learn more about Next.js, take a look at the following resources:
+- Safety: amounts are converted to base units with BN; stake ids are 8-byte LE values; transactions are simulated before send and logs are surfaced.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Solana program integration (how-to)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Generate typed bindings from your IDL:
+```bash
+anchor idl type staking_program.json --out staking_program.ts
+```
+- Create a typed Anchor `Program` instance with your IDL and `AnchorProvider`.
+- Derive PDAs per program seeds; for ATAs, derive with `ASSOCIATED_TOKEN_PROGRAM_ID`.
+- Validate inputs client-side (amounts, balances), then `simulate()` the method.
+- Add any needed preInstructions (e.g., user ATA creation), then call `.rpc()`.
+- Query program accounts via `program.account.<account>.all(...)` with `memcmp` filters.
 
-## Deploy on Vercel
+- Reference IDL (staking): [staking_program.json](https://gist.githubusercontent.com/Alwin24/8eb8507030c586ea5dd5a92dcfea2fbe/raw/426d877c23087c2254774848e083b9d30438bfad/staking_program.json)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Project layout
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/
+  app/            # Next.js app entry
+  components/     # UI (wallet, stake form/list)
+  lib/
+    anchor/       # IDL, typed program, PDA helpers
+    services/     # stakeService (business logic)
+    solana/       # connection + wallet providers
+```
+
+### Troubleshooting
+
+- Insufficient balance: the UI validates your ATA balance and shows a clear message.
+- Account not initialized: the dApp creates the user ATA if missing, program must create vault accounts for PDAs.
+- ATA for PDA: not allowed by the ATA program, use a program-owned token account instead.
+
+---
+
+MIT License
