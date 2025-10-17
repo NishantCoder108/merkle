@@ -6,85 +6,47 @@ import Container from "@/components/layout/Container";
 import WalletConnect from "@/components/solana/WalletConnect";
 import StakeForm from "@/components/stake/StakeForm";
 import StakeList from "@/components/stake/StakeList";
-import { StakeService, DurationType } from "@/lib/services/stakeService";
-import { useAnchorProgram } from "@/lib/anchor/program";
+import { useConnection } from "@solana/wallet-adapter-react";
+import { fetchUserStakeAccounts } from "@/lib/services/stakeService";
+
+
+
 export default function Home() {
+  const { connection } = useConnection();
   const { connected, publicKey } = useWallet();
-  // const { program, provider, wallet } = useAnchorProgram(); // ✅ hook at top
+  const [stakeAccounts, setStakeAccounts] = useState<any[]>([]);
 
-  // const [stakeAccounts, setStakeAccounts] = useState<any[]>([]);
-  // const [isLoading, setIsLoading] = useState(false);
-  // const [error, setError] = useState<string | null>(null);
+  async function loadStakes() {
+    if (!connected || !publicKey) {
+      setStakeAccounts([]);
+      return;
+    }
+    try {
+      const items = await fetchUserStakeAccounts({ connection, wallet: { publicKey } as any });
+      setStakeAccounts(items);
+    } catch (e) {
+      console.error(e);
+    }
+  }
 
-  // const handleStakeConfirm = async (data: { amount: number; duration: string }) => {
-  //   if (!connected || !publicKey) {
-  //     setError("Please connect your wallet first");
-  //     return;
-  //   }
-
-  //   setIsLoading(true);
-  //   setError(null);
-
-  //   try {
-  //     const stakeService = new StakeService(program, provider, wallet);
-  //     const stakeId = BigInt(Date.now());
-      
-  //     await stakeService.stakeToken({
-  //       amount: data.amount,
-  //       stakeId,
-  //       duration: data.duration as DurationType,
-  //     });
-
-  //     await loadStakeAccounts();
-  //   } catch (err: any) {
-  //     setError(err.message || "Stake transaction failed");
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
-  // const loadStakeAccounts = async () => {
-  //   if (!connected || !publicKey) {
-  //     setStakeAccounts([]);
-  //     return;
-  //   }
-
-  //   setIsLoading(true);
-  //   try {
-  //     const stakeService = new StakeService(program, provider, wallet);
-  //     const accounts = await stakeService.getStakeAccounts();
-  //     setStakeAccounts(accounts);
-  //   } catch (err: any) {
-  //     setError(err.message || "Failed to load stake accounts");
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   if (connected) {
-  //     loadStakeAccounts();
-  //   } else {
-  //     setStakeAccounts([]);
-  //   }
-  // }, [connected, publicKey]);
+  useEffect(() => {
+    loadStakes();
+    
+  }, [connected, publicKey?.toBase58()]);
 
   return (
     <main className="min-h-screen bg-black">
-      {/* ... UI ... */}
+    
       <Container className="flex items-center justify-between py-8">
         <h1 className="text-2xl font-semibold text-white">Solana Program Integration</h1>
         <WalletConnect />
       </Container>
       <Container className="mt-16">
-        <StakeForm/>
+        <StakeForm onStaked={loadStakes} />
       </Container>
-      {/* <Container>
-        <StakeForm onConfirm={handleStakeConfirm} loading={isLoading} />
-      </Container>
-      <Container>
+      <Container className="mt-10">
         <StakeList items={stakeAccounts} />
-      </Container> */}
+      </Container>
     </main>
   );
 }
