@@ -8,6 +8,7 @@ import StakeForm from "@/components/stake/StakeForm";
 import StakeList from "@/components/stake/StakeList";
 import { useConnection } from "@solana/wallet-adapter-react";
 import { fetchUserStakeAccounts } from "@/lib/services/stakeService";
+import { PublicKey, Keypair } from "@solana/web3.js";
 
 
 
@@ -34,6 +35,13 @@ export default function Home() {
     
   }, [connected, publicKey?.toBase58()]);
 
+  const mockItems = [
+    { pubkey: Keypair.generate().publicKey, data: { stakedAmount: 3_450_000_000 } },
+    { pubkey: Keypair.generate().publicKey, data: { stakedAmount: 12_000_000_000 } },
+    { pubkey: Keypair.generate().publicKey, data: { stakedAmount: 250_000_000 } },
+  ] as any;
+
+
   return (
     <main className="min-h-screen bg-black">
     
@@ -46,6 +54,7 @@ export default function Home() {
       </Container>
       <Container className="mt-10">
         <StakeList items={stakeAccounts} />
+        {/* <StakeList items={mockItems} /> */}
       </Container>
     </main>
   );
