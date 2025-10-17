@@ -2,12 +2,15 @@
 
 A minimal, production-ready staking frontend for a Solana Anchor program.
 
+![Demo](./public/demo.png)
 ### What this delivers
 
 - Wallet connect (Wallet Adapter) and network-aware RPCs
 - Stake flow: generate 64-bit stake id, derive PDAs, simulate, send
 - Account management: list user stake accounts via Anchor account query
 - Robust UX: client-side validation, clear on-chain error logs surfaced to UI
+
+
 
 ### Tech
 
