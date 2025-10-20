@@ -19,27 +19,29 @@ const Navbar = () => {
     <div>
       {" "}
       <nav className="flex items-center justify-between py-6  border-b border-solid border-[#FFFFFF1A]">
-        <div
-          className={`text-2xl  text-[40px] text-transparent bg-clip-text bg-[linear-gradient(90.17deg,#CCD1E9_0.15%,#CACFE7_21.17%)] ${museo.className}`}
-        >
-          <span className={`font-semibold`}>x</span>
-          <span className="font-medium">Combinator</span>
-        </div>
+        <Link href={"/"}>
+          <div
+            className={`text-2xl  text-[40px] text-transparent bg-clip-text bg-[linear-gradient(90.17deg,#CCD1E9_0.15%,#CACFE7_21.17%)] ${museo.className}`}
+          >
+            <span className={`font-semibold`}>x</span>
+            <span className="font-medium">Combinator</span>
+          </div>
+        </Link>
         <div className="flex items-center gap-8">
           <Link
-            href="#"
+            href="/api/ambassadors"
             className={`font-medium text-sm text-[#636475] hover:text-white transition ${roboto.className} `}
           >
             Ambassadors
           </Link>
           <Link
-            href="#"
+            href="/api/our-products"
             className={`font-medium text-sm text-[#636475] hover:text-white transition ${roboto.className} `}
           >
             our products
           </Link>
           <Link
-            href="#"
+            href="/api/x"
             className={`font-medium text-sm text-[#636475] hover:text-white transition ${roboto.className} `}
           >
             $X
