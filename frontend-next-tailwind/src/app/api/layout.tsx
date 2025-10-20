@@ -1,16 +1,15 @@
 import Footer from "@/components/Footer";
-import HeroSection from "@/components/HeroSection";
 import Navbar from "@/components/Navbar";
-import Image from "next/image";
+import React, { ReactNode } from "react";
 
-export default function Home() {
+const Layout = ({ children }: { children: ReactNode }) => {
   return (
     <div className="relative px-11  flex flex-col min-h-screen">
       <Navbar />
-
-      <HeroSection />
-
+      {children}
       <Footer />
     </div>
   );
-}
+};
+
+export default Layout;
