@@ -40,3 +40,15 @@ body::after {
   pointer-events: none;
   z-index: -1;
 }
+
+.border-image {
+  border: 2px solid transparent;
+  border-radius: 10px;
+  background-image: linear-gradient(to right, transparent, #1b171758),
+    linear-gradient(to right, transparent, rgba(128, 128, 128, 0.41));
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+}
+
+/* linear-gradient(270deg, rgba(255, 255, 255, .1) -.91%, rgba(153, 153, 153, 0) 103.51%) */
+/* bg-[linear-gradient(90deg,#1B1B25_0%,rgba(101,101,139,0)_72%) */
