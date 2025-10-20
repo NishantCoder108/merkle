@@ -11,7 +11,7 @@ const museo = MuseoModerno({
 const Footer = () => {
   return (
     <div>
-      <div className="absolute bottom-0 w-full h-48 flex justify-center items-end bg-[radial-gradient(ellipse_at_50%_120%,rgba(217,217,217,0.21),rgba(217,217,217,0.15),rgba(217,217,217,0.1),rgba(217,217,217,0.05),rgba(217,217,217,0.02),rgba(217,217,217,0.01),rgba(115,115,115,0.0001),rgba(115,115,115,0.0000)))] ">
+      <div className=" w-full  h-48 flex justify-center items-end bg-[radial-gradient(ellipse_at_50%_120%,rgba(217,217,217,0.21),rgba(217,217,217,0.15),rgba(217,217,217,0.1),rgba(217,217,217,0.05),rgba(217,217,217,0.02),rgba(217,217,217,0.01),rgba(115,115,115,0.0001),rgba(115,115,115,0.0000)))] ">
         <div
           className={`text-white text-center py-4 flex items-center justify-center ${museo.className}`}
         >
