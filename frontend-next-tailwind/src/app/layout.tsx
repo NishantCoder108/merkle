@@ -1,11 +1,5 @@
 import type { Metadata } from "next";
-import {
-  Geist,
-  Geist_Mono,
-  MuseoModerno,
-  Roboto,
-  Roboto_Mono,
-} from "next/font/google";
+import { Roboto, Roboto_Mono } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Roboto({
@@ -17,12 +11,7 @@ const geistMono = Roboto_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-const museoModerno = MuseoModerno({
-  subsets: ["latin"],
-  weight: ["400"], // or other weights if needed
-  variable: "--font-museo-moderno",
-  display: "swap",
-});
+
 export const metadata: Metadata = {
   title: "XCombinator",
   description: "X-combinator",
@@ -36,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${museoModerno.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable}  antialiased`}
       >
         {children}
       </body>
